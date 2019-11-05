@@ -55,9 +55,7 @@ function pc_create_post_treinamento()
 }
 add_action('init', 'pc_create_post_treinamento');
 
-
-// Se funcionar mantém
-function wordpress_pagination( $items = null)
+function wordpress_pagination($items = null)
 {
     $prev_arrow = is_rtl() ? '→' : '←';
     $next_arrow = is_rtl() ? '←' : '→';
@@ -69,7 +67,7 @@ function wordpress_pagination( $items = null)
         $total = $wp_query->max_num_pages;
     }
     $big = 999999999; // need an unlikely integer
-    if ($total > 1) {
+    if ($total >= 1) {
         if (!$current_page = get_query_var('paged'))
             $current_page = 1;
         if (get_option('permalink_structure')) {
@@ -82,10 +80,20 @@ function wordpress_pagination( $items = null)
             'format'        => $format,
             'current'        => max(1, get_query_var('paged')),
             'total'         => $total,
-            'mid_size'        => 3,
             'type'             => 'list',
             'prev_text'        => $prev_arrow,
             'next_text'        => $next_arrow,
         ));
     }
 }
+
+function show_opcoes_treinamento()
+{
+    require_once('meta/meta_data_treinamentos.php');
+}
+
+function add_treinamento_box()
+{
+    add_meta_box('meta_treinamento', 'Opções de Adcionais', 'show_opcoes_treinamento');
+}
+add_action('add_meta_boxes', 'add_treinamento_box');

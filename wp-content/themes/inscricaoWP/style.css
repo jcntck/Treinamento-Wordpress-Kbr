@@ -5,6 +5,29 @@ Description: Tema para o treinamento de WP.
 Version: 1.0alpha
 */
 
+
+/** Index **/
+
+
+/* Header */
+
+.title {
+    padding-bottom: 15px;
+    font-size: 2.9em;
+    border-bottom: 3px solid #d48712;
+}
+
+
+/* Card Style */
+
+.no-img {
+    display: block;
+    height: 155px;
+    background-image: url(images/no-img.png);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 .title-card {
     font-size: 1.4em;
 }
@@ -26,10 +49,34 @@ Version: 1.0alpha
     color: #d48712;
 }
 
-/* TESTE */
+
+/* Pagination Style */
+
 ul.page-numbers {
-    list-style: none;
+    display: inline-block;
     margin: 0;
+}
+
+.page-numbers a,
+.page-numbers span {
+    font-weight: bold;
+    font-size: 20px;
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+.page-numbers a span {
+    padding: 0
+}
+
+.page-numbers a:hover,
+.page-numbers.current,
+.page-numbers.current:hover {
+    color: #d48712;
+    background: #f7f7f7;
+    text-decoration: none;
 }
 
 .page-numbers:after {
@@ -48,29 +95,33 @@ ul.page-numbers li {
     text-align: center;
 }
 
-.page-numbers a,
-.page-numbers span {
-    line-height: 1.6em;
-    display: block;
-    padding: 0 6px;
-    height: 18px;
-    line-height: 18px;
-    font-size: 12px;
-    text-decoration: none;
-    font-weight: 400;
-    cursor: pointer;
-    border: 1px solid #ddd;
-    color: #888;
+.page-numbers:hover {
+    text-decoration: none
 }
 
-.page-numbers a span { padding: 0 }
 
-.page-numbers a:hover,
-.page-numbers.current,
-.page-numbers.current:hover {
-    color: #000;
-    background: #f7f7f7;
-    text-decoration: none;
+/** Single **/
+
+#content-single {
+    margin-top: 30px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
 }
 
-.page-numbers:hover { text-decoration: none }
+#content-single .content {
+    align-self: center;
+}
+
+@media (max-width: 992px) {
+    #content-single {
+        flex-direction: column;
+    }
+    #content-single img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
