@@ -10,7 +10,7 @@ function pc_remove_links_menu()
     remove_menu_page('index.php'); //Dashboard
     remove_menu_page('edit.php'); // Posts
     remove_menu_page('edit-comments.php'); // Comentários
-    remove_menu_page('plugins.php'); // Plugins
+    // remove_menu_page('plugins.php'); // Plugins
     remove_menu_page('tools.php');  // Ferramentas
     // remove_menu_page ('upload.php'); // Mídia
     // remove_menu_page ('link-manager.php'); // Links Permanentes
@@ -87,13 +87,11 @@ function wordpress_pagination($items = null)
     }
 }
 
-function show_opcoes_treinamento()
+// Tentativa de colocar o jquery mask
+function my_admin_enqueue_scripts() 
 {
-    require_once('meta/meta_data_treinamentos.php');
+    wp_enqueue_script( 'mask-js', get_template_directory_uri() . '/js/mask/dist/jquery.mask.min.js');
+	wp_enqueue_script( 'my-admin-js', get_template_directory_uri() . '/js/functions.js', array(), '1.0.0', true );
 }
 
-function add_treinamento_box()
-{
-    add_meta_box('meta_treinamento', 'Opções de Adcionais', 'show_opcoes_treinamento');
-}
-add_action('add_meta_boxes', 'add_treinamento_box');
+add_action('acf/input/admin_enqueue_scripts', 'my_admin_enqueue_scripts');

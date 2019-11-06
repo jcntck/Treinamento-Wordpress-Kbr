@@ -5,6 +5,10 @@ Description: Tema para o treinamento de WP.
 Version: 1.0alpha
 */
 
+body {
+    box-sizing: border-box;
+}
+
 
 /** Index **/
 
@@ -102,24 +106,73 @@ ul.page-numbers li {
 
 /** Single **/
 
-#content-single {
-    margin-top: 30px;
-    padding: 15px;
-    border: 1px solid #ccc;
+#title-single {
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
 }
 
-#content-single .content {
+#title-single .info {
     align-self: center;
 }
 
+#title-single .info h2 {
+    font-size: 4em;
+}
+
+#title-single .info h3 {
+    font-size: 2em;
+}
+
+.content {
+    padding: 15px;
+    font-size: 1.5em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#titulo-desc-single {
+    margin-top: 8px;
+    padding: 12px;
+    font-size: 1.8em;
+    font-weight: 500;
+    border: 1px solid #ddd;
+}
+
+#divPreco {
+    padding: 20px 0;
+}
+
+.valor,
+.vagas {
+    margin: auto;
+    width: 50%;
+}
+
+.valor .preco {
+    font-size: 2.5em;
+    font-weight: 700;
+}
+
+.valor .gratuito {
+    font-size: 1em;
+}
+
+.vagas {
+    font-size: 1.2em;
+    font-weight: 100;
+    font-style: italic;
+}
+
+#btn-inscricao {
+    width: 100%;
+}
+
 @media (max-width: 992px) {
-    #content-single {
+    #title-single {
         flex-direction: column;
     }
-    #content-single img {
+    #title-single img {
         display: block;
         margin-left: auto;
         margin-right: auto;

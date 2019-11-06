@@ -38,7 +38,7 @@
                         </div>
                         <section class="desc-card">
                             <h2 class="title-card"><?= the_title() ?></h2>
-                            <div class="col"><?= the_content() ?></div>
+                            <div class="col"><?= the_field('chamada') ?></div>
                         </section>
                         <section class="footer-card">
                             <a href="<?= the_permalink() ?>">Ver mais</a>
