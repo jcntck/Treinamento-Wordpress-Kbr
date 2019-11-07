@@ -37,7 +37,8 @@ $treinamento = get_fields();
                         </div>
                     </section>
                     <section>
-                        <a class="waves-effect waves-light deep-orange darken-3 btn-large" id="btn-inscricao">Inscreva-se</a>
+                        <?= site_url('cadastro') . "?id=" . $post->ID ?>
+                        <a href="<?= site_url('cadastro') . "?id=" . $post->ID ?>" class="waves-effect waves-light deep-orange darken-3 btn-large" id="btn-inscricao">Inscreva-se</a>
                     </section>
                 </aside>
             </section>

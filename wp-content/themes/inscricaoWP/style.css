@@ -178,3 +178,22 @@ ul.page-numbers li {
         margin-right: auto;
     }
 }
+
+
+/* Form */
+
+#title-form {
+    font-size: 2em;
+}
+
+fieldset {
+    border: 1px solid #ccc;
+}
+
+legend {
+    color: #9e9e9e;
+}
+
+.error {
+    color: red;
+}
