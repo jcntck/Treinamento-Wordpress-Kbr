@@ -194,6 +194,12 @@ legend {
     color: #9e9e9e;
 }
 
-.error {
+.error div {
     color: red;
+}
+
+.color-custom,
+.color-custom:hover,
+.color-custom:focus {
+    background-color: #d48712;
 }
