@@ -1,4 +1,12 @@
 <?php
+if(isset($_POST['submit'])) {
+    $error = cadastrarInscrito();
+    if(empty($error)) {
+        wp_redirect(home_url() . '?saved=1');
+        exit;
+    }
+}
+print_r($error);
 /* Template Name: Formulário Inscritos */
 get_header();
 
@@ -11,14 +19,13 @@ $thumb = get_the_post_thumbnail($id, 'thumbnail', array('class' => 'circle'));
 // var_dump(get_post($id));
 // echo $thumb;
 ?>
-
 <main class="container">
     <div class="row">
         <h2 class='title'>Ficha de Inscrição</h2>
     </div>
     <div class="row">
         <section class="col s8 section-form">
-            <form id="formInscricao" action="<?= get_template_directory_uri() . '/inscritosDAO.php' ?>" method="post" novalidate="novalidate">
+            <form id="formInscricao" action="<?= get_permalink() . "?id=" . $id?>" method="post" novalidate="novalidate">
                 <input type="hidden" name="treinamento_id" value="<?=$id?>">
                 <div class="row">
                     <div class="input-field col s11">
@@ -97,7 +104,7 @@ $thumb = get_the_post_thumbnail($id, 'thumbnail', array('class' => 'circle'));
                 </div>
                 <div class="row">
                     <div class="col s11">
-                        <button class="btn-large color-custom waves-effect waves-light" type="submit" name="action">Enviar
+                        <button class="btn-large color-custom waves-effect waves-light" type="submit" name="submit">Enviar
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
@@ -122,7 +129,7 @@ $thumb = get_the_post_thumbnail($id, 'thumbnail', array('class' => 'circle'));
     </div>
 </main>
 
-<!-- JQuery, datepicker -->
+<!-- JQuery -->
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script src="<?= get_template_directory_uri() . '/js/mask/dist/jquery.mask.min.js' ?>"></script>
 <script src="<?= get_template_directory_uri() . '/js/validation/dist/jquery.validate.min.js' ?>"></script>

@@ -17,7 +17,13 @@
             </form>
         </div>
     </div>
-
+    <?php if (isset($_GET['saved'])) : ?>
+        <div class="row">
+            <div class="col s12 card-panel green accent-1">
+                <p>Inscrição realizada</p>
+            </div>
+        </div>
+    <?php endif; ?>
     <div class="row">
         <?php
         $args = array(
