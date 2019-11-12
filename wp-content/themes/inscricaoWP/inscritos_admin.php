@@ -3,8 +3,14 @@
 
 <?php
 global $wpdb;
-$results = $wpdb->get_results("SELECT * FROM wp_inscritos");
-
+if(isset($_POST['apagar'])) $message = apagarInscrito($_POST['apagar']);
+if(isset($_GET['treinamento_id'])) $results = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE treinamento_id=". $_GET['treinamento_id']);
+else $results = $wpdb->get_results("SELECT * FROM wp_inscritos");
+?>
+<div class="row" id="status-message">
+    <?=$message?>
+</div>
+<?php
 // var_dump($results);
 if (!empty($results)) : ?>
     <section class="row">
@@ -12,9 +18,10 @@ if (!empty($results)) : ?>
             <thead>
                 <tr>
                     <th>TREINAMENTO</th>
+                    <th>DATA DE INSCRIÇÃO</th>
                     <th>NOME COMPLETO</th>
-                    <th>DATA NASCIMENTO</th>
                     <th>E-MAIL</th>
+                    <th>STATUS</th>
                     <th></th>
                 </tr>
             </thead>
@@ -22,12 +29,19 @@ if (!empty($results)) : ?>
                 <?php foreach ($results as $inscrito) : ?>
                     <tr>
                         <td><?= get_the_title($inscrito->treinamento_id) ?></td>
-                        <td><?= date('d/m/Y', strtotime($inscrito->data_nascimento)) ?></td>
+                        <td><?= date('d/m/Y', strtotime($inscrito->created_at)) ?></td>
                         <td><?= $inscrito->nome_completo ?></td>
                         <td><?= $inscrito->email ?></td>
-                        <td><button class="btn-info" value="<?=$inscrito->ID?>">Mais informações</button></td>
-                        <!-- <input type="hidden" id="id" value="<?=$inscrito->ID?>"> -->
-                        <input type="hidden" id="info-<?=$inscrito->ID?>" value='<?= getInscritos($inscrito->ID) ?>''>
+                        <td> - </td>
+                        <td>
+                            <button class="btn-info" value="<?= $inscrito->ID ?>">Mais informações</button>
+                            <form method="post" style="display: inline">
+                                <button name="apagar" value="<?= $inscrito->ID ?>">Deletar</button>
+                            </form>
+
+                        </td>
+                        <!-- <input type="hidden" id="id" value="<?= $inscrito->ID ?>"> -->
+                        <input type="hidden" id="info-<?= $inscrito->ID ?>" value='<?= getInscritos($inscrito->ID) ?>'>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -42,18 +56,38 @@ if (!empty($results)) : ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script>
     var display = false;
+    var currentId;
 
     $(".btn-info").click(function() {
-        // console.log($(".btn-info").val())
         var id = $(this).val();
-        var objInfo = JSON.parse($("#info-" + id).val());
-        console.log(objInfo);
+        var inscrito = JSON.parse($("#info-" + id).val());
+        // console.log(inscrito)
         if (display == false) {
-            $('#mais-info').append("");
+            $(' #mais-info').append(mostrarDados(inscrito));
+            currentId = id;
             display = true
         } else {
-            $('#mais-info').empty();
-            display = false;
+            if (id != currentId) {
+                $('#mais-info').empty();
+                $('#mais-info').append(mostrarDados(inscrito));
+                currentId = id;
+            } else {
+                $('#mais-info').empty();
+                display = false;
+            }
         }
     })
+
+    function mostrarDados(inscrito) {
+        return conteudo = "<p>" + inscrito[0].nome_completo + "</p>" +
+            "<p>" + inscrito[0].data_nascimento + "</p>" +
+            "<p>" + inscrito[0].cpf + "</p>" +
+            "<p>" + inscrito[0].email + "</p>" +
+            "<p>" + inscrito[0].telefone + "</p>" +
+            "<p>" + inscrito[0].celular + "</p>";
+    }
+
+    function fecharMessagem() {
+        $("#status-message").empty();
+    }
 </script>

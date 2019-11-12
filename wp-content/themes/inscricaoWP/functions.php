@@ -117,7 +117,7 @@ function cadastrarInscrito()
         )
     );
 
-    if(!$success) {
+    if (!$success) {
         return new WP_Error('error', 'Não foi possível realizar seu cadastro, tente novamente mais tarde');
     }
 }
@@ -136,23 +136,71 @@ function just_number($number)
     return preg_replace('/\D/', '', $number);
 }
 
-function materialize_scripts() {
-    wp_enqueue_style( 'style-name', 'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css' );
+function materialize_scripts()
+{
+    wp_enqueue_style('style-name', 'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
 }
 add_action('wp_enqueue_scripts', 'materialize_scripts');
 
-function inscritos_admin() {
-    add_menu_page('Listagem de inscritos', 'Inscritos', 'manage_options','inscritos_menu', 'inscritos_admin_page', 'dashicons-admin-users', 6 );
+function inscritos_admin()
+{
+    add_menu_page('Listagem de inscritos', 'Inscritos', 'manage_options', 'inscritos_menu', 'inscritos_admin_page', 'dashicons-admin-users', 6);
 }
 
 add_action('admin_menu', 'inscritos_admin');
 
-function inscritos_admin_page() {
+function inscritos_admin_page()
+{
     include_once('inscritos_admin.php');
 }
 
-function getInscritos($id) {
+function getInscritos($id)
+{
     global $wpdb;
     $results = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE ID = " . $id);
     return json_encode($results);
 }
+
+function apagarInscrito($id)
+{
+    global $wpdb;
+    $status = $wpdb->delete("wp_inscritos", array('ID' => $id), array('%d'));
+
+    if ($status) {
+        return '<div class="col s11 card-panel red accent-1"> <p> Inscrito deletado <a href="#" onclick="fecharMessagem()">Fechar</a></p>  </div>';
+    } else {
+        return '<div class="col s11 card-panel red accent-1"> <p> Não foi possível deletar esse inscrito. Tente novamente mais tarde. <a href="#" onclick="fecharMessagem()">Fechar</a></p>  </div>';
+    }
+}
+
+// add_filter('manage_posts_columns', 'posts_columns');
+add_filter('manage_treinamento_posts_columns', 'posts_columns');
+// add_action('manage_treinamento_posts_custom_column', 'inscritos_columns_content', 5, 2);
+ add_action('manage_treinamento_posts_custom_column', 'inscritos_columns_content', 10, 2);
+
+// function posts_columns($defaults) {
+//     $defaults['vizualizar_user'] = __('Vizualizar');
+//    return $defaults;
+// }
+ function posts_columns($defaults){
+    $defaults = array (
+        'cb' => '&lt;input type="checkbox">',
+        'title' => __( 'Treinamentos' ),
+        'inscritos' => __( 'Inscritos' ),
+        'date' => __( 'Date' )
+    );
+    return $defaults;
+ }
+
+function inscritos_columns_content($column_name, $post_ID) {
+    if ($column_name === 'inscritos') {
+        echo '<a href="'.site_url().'/wp-admin/admin.php?page=inscritos_menu&treinamento_id='.$post_ID.'">Inscritos</a>';
+    }
+}
+
+//  function posts_custom_columns($column_name, $id){
+//    if($column_name === 'vizualizar_user'){
+//      echo "<button style='padding: 0.375rem 0.75rem;border-radius: 0.25rem;font-size: 1rem;color: #fff !important;background-color: #f0ad4e;border-color: #f0ad4e;border: 1px solid transparent;text-decoration: none;'><a href='./admin.php?page=treinamentos&id=".$id."' >Vizualizar</a></button>";
+//    }
+//  }
+

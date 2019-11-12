@@ -1,4 +1,5 @@
 <?php
+/* Template Name: Formulário Inscritos */
 if(isset($_POST['submit'])) {
     $error = cadastrarInscrito();
     if(empty($error)) {
@@ -7,7 +8,6 @@ if(isset($_POST['submit'])) {
     }
 }
 print_r($error);
-/* Template Name: Formulário Inscritos */
 get_header();
 
 $id = isset($_GET['id']) ? $_GET['id'] : null;

@@ -1,0 +1,119 @@
+[
+    {
+        "key": "group_5dc2f359556a5",
+        "title": "Opções de Treinamento",
+        "fields": [
+            {
+                "key": "field_5dc2f5ec6584d",
+                "label": "Chamada",
+                "name": "chamada",
+                "type": "text",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "Digite uma pequena descrição sobre o treinamento.",
+                "prepend": "",
+                "append": "",
+                "maxlength": 50
+            },
+            {
+                "key": "field_5dc2f95771651",
+                "label": "Esse curso é gratuito?",
+                "name": "gratuito",
+                "type": "radio",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Sim": "Sim",
+                    "Não": "Não"
+                },
+                "allow_null": 0,
+                "other_choice": 0,
+                "default_value": "",
+                "layout": "horizontal",
+                "return_format": "value",
+                "save_other_choice": 0
+            },
+            {
+                "key": "field_5dc2f9bb71652",
+                "label": "Valor do treinamento",
+                "name": "valor",
+                "type": "number",
+                "instructions": "Valor máximo do treinamento é R$ 1000,00",
+                "required": 1,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_5dc2f95771651",
+                            "operator": "==",
+                            "value": "Não"
+                        }
+                    ]
+                ],
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "Digite o valor do treinamento",
+                "prepend": "",
+                "append": "",
+                "min": 0,
+                "max": 1000,
+                "step": ""
+            },
+            {
+                "key": "field_5dc2fd766d6f6",
+                "label": "Número de vagas",
+                "name": "vagas",
+                "type": "number",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "100",
+                    "class": "",
+                    "id": ""
+                },
+                "valor_gratuito": 0,
+                "default_value": "",
+                "placeholder": "Digite quantas vagas tem esse treinamento",
+                "prepend": "",
+                "append": "",
+                "min": 0,
+                "max": 100,
+                "step": ""
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "treinamento"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "acf_after_title",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    }
+]
