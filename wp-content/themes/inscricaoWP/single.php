@@ -26,7 +26,7 @@ $treinamento = get_fields();
                 <aside class="col s12 m5 l4">
                     <section class="card-panel deep-orange accent-2 white-text" id="divPreco">
                         <div class="valor">
-                            <?php if ($treinamento['gratuito'] == "Sim") : ?>
+                            <?php if ($treinamento['gratuito'] == "true") : ?>
                                 <span class="gratuito">Este é um treinamento gratuito</span>
                             <?php else : ?>
                                 <span class="preco">R$<?= $treinamento['valor'] ?></span>

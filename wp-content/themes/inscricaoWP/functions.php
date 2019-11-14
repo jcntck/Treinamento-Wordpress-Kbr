@@ -96,6 +96,14 @@ function my_admin_enqueue_scripts()
 
 add_action('acf/input/admin_enqueue_scripts', 'my_admin_enqueue_scripts');
 
+function carregarTreinamento($id)
+{
+    $treinamento['acf'] = get_fields($id) ? get_fields($id) : null;
+    $treinamento['wp'] = $id ? get_post($id) : null;
+    $treinamento['thumb'] = get_the_post_thumbnail($id, 'thumbnail', array('class' => 'circle'));
+    return $treinamento;
+}
+
 function cadastrarInscrito()
 {
     global $wpdb;
@@ -176,25 +184,27 @@ function apagarInscrito($id)
 // add_filter('manage_posts_columns', 'posts_columns');
 add_filter('manage_treinamento_posts_columns', 'posts_columns');
 // add_action('manage_treinamento_posts_custom_column', 'inscritos_columns_content', 5, 2);
- add_action('manage_treinamento_posts_custom_column', 'inscritos_columns_content', 10, 2);
+add_action('manage_treinamento_posts_custom_column', 'inscritos_columns_content', 10, 2);
 
 // function posts_columns($defaults) {
 //     $defaults['vizualizar_user'] = __('Vizualizar');
 //    return $defaults;
 // }
- function posts_columns($defaults){
-    $defaults = array (
+function posts_columns($defaults)
+{
+    $defaults = array(
         'cb' => '&lt;input type="checkbox">',
-        'title' => __( 'Treinamentos' ),
-        'inscritos' => __( 'Inscritos' ),
-        'date' => __( 'Date' )
+        'title' => __('Treinamentos'),
+        'inscritos' => __('Inscritos'),
+        'date' => __('Date')
     );
     return $defaults;
- }
+}
 
-function inscritos_columns_content($column_name, $post_ID) {
+function inscritos_columns_content($column_name, $post_ID)
+{
     if ($column_name === 'inscritos') {
-        echo '<a href="'.site_url().'/wp-admin/admin.php?page=inscritos_menu&treinamento_id='.$post_ID.'">Inscritos</a>';
+        echo '<a href="' . site_url() . '/wp-admin/admin.php?page=inscritos_menu&treinamento_id=' . $post_ID . '">Inscritos</a>';
     }
 }
 
@@ -203,4 +213,3 @@ function inscritos_columns_content($column_name, $post_ID) {
 //      echo "<button style='padding: 0.375rem 0.75rem;border-radius: 0.25rem;font-size: 1rem;color: #fff !important;background-color: #f0ad4e;border-color: #f0ad4e;border: 1px solid transparent;text-decoration: none;'><a href='./admin.php?page=treinamentos&id=".$id."' >Vizualizar</a></button>";
 //    }
 //  }
-

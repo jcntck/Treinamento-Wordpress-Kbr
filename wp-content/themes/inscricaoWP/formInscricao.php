@@ -10,14 +10,10 @@ if(isset($_POST['submit'])) {
 print_r($error);
 get_header();
 
-$id = isset($_GET['id']) ? $_GET['id'] : null;
-$treinamento_acf = get_fields($id) ? get_fields($id) : null;
-$treinamento_wp = $id ? get_post($id) : null;
-$thumb = get_the_post_thumbnail($id, 'thumbnail', array('class' => 'circle'));
-// var_dump($treinamento_acf);
-// echo "<br><hr>";
-// var_dump(get_post($id));
-// echo $thumb;
+if(isset($_GET['id'])) $treinamento = carregarTreinamento($_GET['id']);
+$acf = $treinamento['acf'];
+$treinamento_wp = $treinamento['wp'];
+$thumb = $treinamento['thumb'];
 ?>
 <main class="container">
     <div class="row">
@@ -25,8 +21,15 @@ $thumb = get_the_post_thumbnail($id, 'thumbnail', array('class' => 'circle'));
     </div>
     <div class="row">
         <section class="col s8 section-form">
-            <form id="formInscricao" action="<?= get_permalink() . "?id=" . $id?>" method="post" novalidate="novalidate">
-                <input type="hidden" name="treinamento_id" value="<?=$id?>">
+
+            <?php if($acf['gratuito'] == 'false'): ?>
+            <form id="formInscricao" name="formInscricao" action="<?= site_url() ?>/forma-pagamento" method="post" novalidate="novalidate">
+            <p>Pago <?= site_url() ?>/forma-pagamento</p>
+            <?php else : ?>
+            <form id="formInscricao" name="formInscricao" action="<?= the_permalink() ?>" method="post" novalidate="novalidate">
+            <p>Gratuito</p>
+            <?php endif; ?>
+                <input type="hidden" name="treinamento_id" value="<?=$_GET['id']?>">
                 <div class="row">
                     <div class="input-field col s11">
                         <input type="text" id="nome_completo" name="nome_completo" placeholder="Ex: José Carlos da Silva" data-error=".errorNome" minlength="5" maxlength="50" required>
@@ -114,16 +117,16 @@ $thumb = get_the_post_thumbnail($id, 'thumbnail', array('class' => 'circle'));
         <section class="col s4 card-panel center-align">
             <?= $thumb ?>
             <h3 id="title-form"><?= $treinamento_wp->post_title ?></h3>
-            <p><?= $treinamento_acf['chamada'] ?></p>
+            <p><?= $acf['chamada'] ?></p>
             <div class="valor">
-                <?php if ($treinamento_acf['gratuito'] == "Sim") : ?>
+                <?php if ($acf['gratuito'] == "true") : ?>
                     <span class="gratuito">Este é um treinamento gratuito</span>
                 <?php else : ?>
-                    <span class="preco">R$<?= $treinamento_acf['valor'] ?></span>
+                    <span class="preco">R$<?= $acf['valor'] ?></span>
                 <?php endif; ?>
             </div>
             <div class="vagas">
-                <p><?= $treinamento_acf['vagas'] ?> vagas sobrando.</p>
+                <p><?= $acf['vagas'] ?> vagas sobrando.</p>
             </div>
         </section>
     </div>
