@@ -24,6 +24,10 @@ body {
 
 /* Card Style */
 
+.list-treinamento {
+    height: 450px;
+}
+
 .no-img {
     display: block;
     height: 155px;

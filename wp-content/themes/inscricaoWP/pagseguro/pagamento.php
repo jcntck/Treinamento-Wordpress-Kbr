@@ -1,5 +1,5 @@
 <?php
-// Template Name: Pagamento - PHP
+// Template Name: Gerar Sessão Pagseguro - PHP
 include_once 'configuracao.php';
 
 $url = URL_PAGSEGURO . "sessions?email=" . EMAIL_PAGSEGURO . "&token=" . TOKEN_PAGSEGURO;

@@ -36,7 +36,7 @@
         if ($items->have_posts()) : while ($items->have_posts()) : $items->the_post();
                 ?>
                 <div class="col l4 m6 s12">
-                    <article class="card-panel">
+                    <article class="card-panel list-treinamento">
                         <div class="center-align">
                             <?php if (has_post_thumbnail()) : the_post_thumbnail('thumbnail');
                                     else : echo "<span class='no-img'></span>";

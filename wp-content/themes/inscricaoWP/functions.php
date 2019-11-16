@@ -87,7 +87,6 @@ function wordpress_pagination($items = null)
     }
 }
 
-// Tentativa de colocar o jquery mask
 function my_admin_enqueue_scripts()
 {
     wp_enqueue_script('mask-js', get_template_directory_uri() . '/js/mask/dist/jquery.mask.min.js');
@@ -125,41 +124,8 @@ function cadastrarInscrito()
         )
     );
 
-    if (!$success) {
-        return new WP_Error('error', 'Não foi possível realizar seu cadastro, tente novamente mais tarde');
-    }
-}
-
-function date_converter($_date = null)
-{
-    $format = '/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/';
-    if ($_date != null && preg_match($format, $_date, $partes)) {
-        return $partes[3] . '-' . $partes[2] . '-' . $partes[1];
-    }
-    return false;
-}
-
-function just_number($number)
-{
-    return preg_replace('/\D/', '', $number);
-}
-
-function materialize_scripts()
-{
-    wp_enqueue_style('style-name', 'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
-}
-add_action('wp_enqueue_scripts', 'materialize_scripts');
-
-function inscritos_admin()
-{
-    add_menu_page('Listagem de inscritos', 'Inscritos', 'manage_options', 'inscritos_menu', 'inscritos_admin_page', 'dashicons-admin-users', 6);
-}
-
-add_action('admin_menu', 'inscritos_admin');
-
-function inscritos_admin_page()
-{
-    include_once('inscritos_admin.php');
+    if ($success) return true;
+    else false;
 }
 
 function getInscritos($id)
@@ -181,15 +147,56 @@ function apagarInscrito($id)
     }
 }
 
-// add_filter('manage_posts_columns', 'posts_columns');
+function validateCPF()
+{
+    global $wpdb;
+    if (isset($_POST['cpf'])) {
+        $rows = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE cpf=" . just_number($_POST['cpf']) . " AND treinamento_id=". $_POST['treinamento_id'], ARRAY_N);
+        $nums_rows = $wpdb->num_rows;
+        if($nums_rows > 0) return false;
+        else return true; 
+    } else {
+        return false;
+    }
+}
+
+function date_converter($_date = null)
+{
+    $format = '/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/';
+    if ($_date != null && preg_match($format, $_date, $partes)) {
+        return $partes[3] . '-' . $partes[2] . '-' . $partes[1];
+    }
+    return false;
+}
+
+function just_number($number)
+{
+    return preg_replace('/\D/', '', $number);
+}
+
+// Admin - Inscritos
+
+function materialize_scripts()
+{
+    wp_enqueue_style('style-name', 'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
+}
+add_action('wp_enqueue_scripts', 'materialize_scripts');
+
+function inscritos_admin()
+{
+    add_menu_page('Listagem de inscritos', 'Inscritos', 'manage_options', 'inscritos_menu', 'inscritos_admin_page', 'dashicons-admin-users', 6);
+}
+
+add_action('admin_menu', 'inscritos_admin');
+
+function inscritos_admin_page()
+{
+    include_once('inscritos_admin.php');
+}
+
 add_filter('manage_treinamento_posts_columns', 'posts_columns');
-// add_action('manage_treinamento_posts_custom_column', 'inscritos_columns_content', 5, 2);
 add_action('manage_treinamento_posts_custom_column', 'inscritos_columns_content', 10, 2);
 
-// function posts_columns($defaults) {
-//     $defaults['vizualizar_user'] = __('Vizualizar');
-//    return $defaults;
-// }
 function posts_columns($defaults)
 {
     $defaults = array(
@@ -207,9 +214,3 @@ function inscritos_columns_content($column_name, $post_ID)
         echo '<a href="' . site_url() . '/wp-admin/admin.php?page=inscritos_menu&treinamento_id=' . $post_ID . '">Inscritos</a>';
     }
 }
-
-//  function posts_custom_columns($column_name, $id){
-//    if($column_name === 'vizualizar_user'){
-//      echo "<button style='padding: 0.375rem 0.75rem;border-radius: 0.25rem;font-size: 1rem;color: #fff !important;background-color: #f0ad4e;border-color: #f0ad4e;border: 1px solid transparent;text-decoration: none;'><a href='./admin.php?page=treinamentos&id=".$id."' >Vizualizar</a></button>";
-//    }
-//  }
