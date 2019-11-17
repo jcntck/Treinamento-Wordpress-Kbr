@@ -19,6 +19,15 @@ function pc_remove_links_menu()
 }
 add_action('admin_menu', 'pc_remove_links_menu');
 
+/* Registrando menu de navegação */
+
+function registrar_menu_navegacao()
+{
+    register_nav_menu('header-menu', 'Menu Header');
+}
+
+add_action('init', 'registrar_menu_navegacao');
+
 function pc_create_post_treinamento()
 {
     $singularName = 'Treinamento';
@@ -124,8 +133,12 @@ function cadastrarInscrito()
         )
     );
 
-    if ($success) return true;
-    else false;
+    if ($success) {
+        $vagasBanco = $wpdb->get_row("SELECT meta_value FROM wp_postmeta WHERE meta_key='vagas' AND post_id=" . $_POST['treinamento_id']);
+        $vagas = $vagasBanco->meta_value - 1;
+        $wpdb->update('wp_postmeta', array( 'meta_value' => $vagas), array('meta_key' => 'vagas', 'post_id' => $_POST['treinamento_id']));
+        return true;
+    } else return false;
 }
 
 function getInscritos($id)
@@ -151,13 +164,70 @@ function validateCPF()
 {
     global $wpdb;
     if (isset($_POST['cpf'])) {
-        $rows = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE cpf=" . just_number($_POST['cpf']) . " AND treinamento_id=". $_POST['treinamento_id'], ARRAY_N);
+        $rows = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE cpf=" . just_number($_POST['cpf']) . " AND treinamento_id=" . $_POST['treinamento_id'], ARRAY_N);
         $nums_rows = $wpdb->num_rows;
-        if($nums_rows > 0) return false;
-        else return true; 
+        if ($nums_rows > 0) return false;
+        else return true;
     } else {
         return false;
     }
+}
+
+function validateEmail()
+{
+    global $wpdb;
+    if (isset($_POST['email'])) {
+        $rows = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE email='" . $_POST['email'] . "' AND treinamento_id=" . $_POST['treinamento_id'], ARRAY_N);
+        $nums_rows = $wpdb->num_rows;
+        if ($nums_rows > 0) return false;
+        else return true;
+    } else {
+        return false;
+    }
+}
+
+function saveInputsValue()
+{
+    if (isset($_SESSION['errorCPF']) && isset($_SESSION['errorEmail'])) {
+        $dados = array(
+            'nome_completo' => $_POST['nome_completo'],
+            'data_nascimento' => $_POST['data_nascimento'],
+            'telefone' => $_POST['telefone'],
+            'celular' => $_POST['celular'],
+            'cep' => $_POST['cep'],
+            'endereco' => $_POST['endereco'],
+            'bairro' => $_POST['bairro'],
+            'cidade' => $_POST['cidade'],
+            'estado' => $_POST['estado']
+        );
+    } else if (isset($_SESSION['errorCPF'])) {
+        $dados = array(
+            'nome_completo' => $_POST['nome_completo'],
+            'data_nascimento' => $_POST['data_nascimento'],
+            'email' => $_POST['email'],
+            'telefone' => $_POST['telefone'],
+            'celular' => $_POST['celular'],
+            'cep' => $_POST['cep'],
+            'endereco' => $_POST['endereco'],
+            'bairro' => $_POST['bairro'],
+            'cidade' => $_POST['cidade'],
+            'estado' => $_POST['estado']
+        );
+    } else if (isset($_SESSION['errorEmail'])) {
+        $dados = array(
+            'nome_completo' => $_POST['nome_completo'],
+            'data_nascimento' => $_POST['data_nascimento'],
+            'cpf' => $_POST['cpf'],
+            'telefone' => $_POST['telefone'],
+            'celular' => $_POST['celular'],
+            'cep' => $_POST['cep'],
+            'endereco' => $_POST['endereco'],
+            'bairro' => $_POST['bairro'],
+            'cidade' => $_POST['cidade'],
+            'estado' => $_POST['estado']
+        );
+    }
+    $_SESSION['inputs'] = $dados;
 }
 
 function date_converter($_date = null)

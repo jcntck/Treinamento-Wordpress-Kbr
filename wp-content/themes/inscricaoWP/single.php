@@ -12,39 +12,46 @@ $treinamento = get_fields();
                             endif; ?>
                 </figure>
                 <div class="info">
-                    <h2 class="deep-orange-text text-darken-2"><?= the_title() ?></h2>
-                    <h3 class="deep-orange-text text-darken-3"><?= $treinamento['chamada'] ?></h3>
+                    <a href="<?= site_url() ?>" class="blue darken-4 waves-effect waves-light btn"><i class="material-icons">arrow_back</i>Voltar</a>
+                    <h2 class="blue-text text-darken-4"><?= the_title() ?></h2>
+                    <h3 class="blue-text text-darken-4"><?= $treinamento['chamada'] ?></h3>
                 </div>
             </section>
             <section class="row">
                 <div class="col s12 m7 l8">
                     <h3 id="titulo-desc-single">Descrição: </h3>
                     <div class="content">
-                        <?= the_content() ?>
+                        <?= the_content() != "" ? the_content() : "Esse treinamento não possui descrição" ?>
                     </div>
                 </div>
                 <aside class="col s12 m5 l4">
-                    <section class="card-panel deep-orange accent-2 white-text" id="divPreco">
-                        <div class="valor">
+                    <section class="card-panel blue darken-4 white-text" id="divPreco">
+                        <div class="valor center">
                             <?php if ($treinamento['gratuito'] == "true") : ?>
                                 <span class="gratuito">Este é um treinamento gratuito</span>
                             <?php else : ?>
                                 <span class="preco">R$<?= $treinamento['valor'] ?></span>
                             <?php endif; ?>
                         </div>
-                        <div class="vagas">
-                            <p><?= $treinamento['vagas'] ?> vagas sobrando.</p>
-                        </div>
+                        <?php if ($treinamento['vagas'] > 0) : ?>
+                            <div class="vagas center">
+                                <p><span id="numero"><?= $treinamento['vagas'] ?></span> vagas restantes.</p>
+                            </div>
                     </section>
                     <section>
-                        <?= site_url('cadastro') . "?id=" . $post->ID ?>
-                        <a href="<?= site_url('cadastro') . "?id=" . $post->ID ?>" class="waves-effect waves-light deep-orange darken-3 btn-large" id="btn-inscricao">Inscreva-se</a>
+                        <a href="<?= site_url('cadastro') . "?id=" . $post->ID ?>" class="waves-effect waves-light blue accent-2 btn-large" id="btn-inscricao">Inscreva-se</a>
                     </section>
-                </aside>
+                <?php else : ?>
+                    <div class="vagas esgotadas center">
+                        <p>Vagas esgotadas</p>
+                    </div>
             </section>
+        <?php endif; ?>
+        </aside>
+        </section>
 
-    <?php endwhile;
-    endif; ?>
+<?php endwhile;
+endif; ?>
 </main>
 
 <?php get_footer(); ?>

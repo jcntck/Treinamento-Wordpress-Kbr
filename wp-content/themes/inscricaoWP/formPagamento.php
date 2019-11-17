@@ -1,6 +1,8 @@
 <?php
 /* Template Name: Formulário Pagamento Inscritos */
-if (validateCPF()) {
+$validCpf = validateCPF();
+$validEmail = validateEmail();
+if ($validCpf && $validEmail) {
     get_header();
     include(get_template_directory() . "/pagseguro/configuracao.php");
     if (isset($_POST['submit'])) { }
@@ -208,7 +210,7 @@ if (validateCPF()) {
                         method: "POST",
                         url: '<?= site_url() ?>/checkout',
                         data: data,
-                        dataType: 'json',
+                        // dataType: 'json',
                         success: function(data) {
                             console.log(data)
                             if (data.error) {
@@ -216,15 +218,10 @@ if (validateCPF()) {
                                 $('#error-transacao').append("<div class='row'> <div class='col s12 card-panel red accent-1'> <p>Ocorreu um erro na transação, por favor verifique se os dados do cartão estão corretos</p> </div> </div>");
                             } else {
                                 $('#error-transacao').empty();
-                                let status = '<?= cadastrarInscrito() ?>'
-                                if (!status) {
-                                    alert('Não foi realizar seu cadastro, tente novamente mais tarde');
-                                }
-                                location.replace("<?= home_url(); ?>");
                             }
                         },
                         error: function(data) {
-                            // console.log(data);
+                            console.log(data);
                         }
                     });
                 }
@@ -235,7 +232,9 @@ if (validateCPF()) {
 get_footer(); 
 } else {
     session_start(); // Inicia a sessão
-    $_SESSION['errorCPF'] = 'CPF já cadastrado neste treinamento';
+    if(!$validCpf) $_SESSION['errorCPF'] = 'CPF já cadastrado neste treinamento';
+    if(!$validEmail) $_SESSION['errorEmail'] = "E-mail já cadastrado neste treinamento";
+    saveInputsValue();
     wp_redirect(site_url().'/cadastro/?id='.$_POST['treinamento_id']);
     ?>
 <?php

@@ -21,11 +21,20 @@ body {
     border-bottom: 3px solid #d48712;
 }
 
+@media (min-width: 600px) {
+    .vertical-align {
+        transform: translateY(50%); 
+    }
+}
 
 /* Card Style */
 
 .list-treinamento {
     height: 450px;
+}
+
+.img-card {
+    height: 155px;
 }
 
 .no-img {
@@ -42,8 +51,24 @@ body {
 
 .desc-card {
     overflow: auto;
-    height: 200px;
     text-align: center;
+}
+
+.chamada {
+    height: 100px;
+}
+
+.small {
+    font-size: 0.8em;
+}
+
+.valor-index {
+    font-weight: 500;
+}
+
+.flex-footer-card {
+    display: flex;
+    justify-content: space-between;
 }
 
 .footer-card {
@@ -110,6 +135,7 @@ ul.page-numbers li {
 
 /** Single **/
 
+
 #title-single {
     display: flex;
     flex-direction: row-reverse;
@@ -121,7 +147,7 @@ ul.page-numbers li {
 }
 
 #title-single .info h2 {
-    font-size: 4em;
+    font-size: 3em;
 }
 
 #title-single .info h3 {
@@ -130,9 +156,15 @@ ul.page-numbers li {
 
 .content {
     padding: 15px;
-    font-size: 1.5em;
+    font-size: 1em;
     border: 1px solid #ddd;
     border-radius: 4px;
+    min-height: 100px;
+}
+
+.content h1, .content h2, .content h3 {
+    font-size: 1.8em;
+    font-weight: 500;
 }
 
 #titulo-desc-single {
@@ -143,14 +175,11 @@ ul.page-numbers li {
     border: 1px solid #ddd;
 }
 
-#divPreco {
-    padding: 20px 0;
-}
 
 .valor,
 .vagas {
     margin: auto;
-    width: 50%;
+    /* width: 60%; */
 }
 
 .valor .preco {
@@ -165,7 +194,12 @@ ul.page-numbers li {
 .vagas {
     font-size: 1.2em;
     font-weight: 100;
-    font-style: italic;
+    font-family: monospace;
+}
+
+.vagas #numero, .esgotadas {
+    font-size: 1.5em;
+    font-weight: 300;
 }
 
 #btn-inscricao {
@@ -181,6 +215,11 @@ ul.page-numbers li {
         margin-left: auto;
         margin-right: auto;
     }
+
+    .info {
+        text-align: center;
+    }
+
 }
 
 
