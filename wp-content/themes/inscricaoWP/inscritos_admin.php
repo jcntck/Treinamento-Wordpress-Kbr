@@ -1,5 +1,4 @@
 <?php materialize_scripts(); ?>
-<!-- <h2>Listagem de inscritos</h1> -->
 
 <?php
 global $wpdb;
@@ -7,6 +6,7 @@ if(isset($_POST['apagar'])) $message = apagarInscrito($_POST['apagar']);
 if(isset($_GET['treinamento_id'])) $results = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE treinamento_id=". $_GET['treinamento_id']);
 else $results = $wpdb->get_results("SELECT * FROM wp_inscritos");
 ?>
+<!-- <h2>Listagem de inscritos</h2> -->
 <div class="row" id="status-message">
     <?=$message?>
 </div>

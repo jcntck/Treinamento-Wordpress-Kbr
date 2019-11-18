@@ -1,13 +1,16 @@
-<?php get_header(); ?>
+<?php 
+session_start();
+get_header(); 
+?>
 
 
 <main class="container">
 
-    <div class="row valign-wrapper">
-        <div class="col s12 xl8">
-            <h1 class='title'>Incrições de Treinamentos</h1>
+    <div class="row">
+        <div class="col s12 m6 l8">
+            <h1 class='title'>Treinamentos</h1>
         </div>
-        <div class="col s12 xl4">
+        <div class="col s12 m6 l4 vertical-align">
             <form>
                 <div class="input-field">
                     <i class="material-icons prefix">search</i>
@@ -17,13 +20,15 @@
             </form>
         </div>
     </div>
-    <?php if (isset($_GET['saved'])) : ?>
+    <?php if (isset($_SESSION['success'])) : ?>
         <div class="row">
             <div class="col s12 card-panel green accent-1">
-                <p>Inscrição realizada</p>
+                <p><?=$_SESSION['success']?></p>
             </div>
         </div>
-    <?php endif; ?>
+    <?php 
+    session_destroy();
+    endif; ?>
     <div class="row">
         <?php
         $args = array(
@@ -36,18 +41,30 @@
         if ($items->have_posts()) : while ($items->have_posts()) : $items->the_post();
                 ?>
                 <div class="col l4 m6 s12">
-                    <article class="card-panel">
-                        <div class="center-align">
-                            <?php if (has_post_thumbnail()) : the_post_thumbnail('thumbnail');
+                    <article class="card-panel list-treinamento" data-url="<?= the_permalink() ?>">
+                        <div class="center-align img-card">
+                            <?php if (has_post_thumbnail()) : the_post_thumbnail('thumbnail', array('class' => 'responsive-img'));
                                     else : echo "<span class='no-img'></span>";
                                     endif; ?>
                         </div>
                         <section class="desc-card">
-                            <h2 class="title-card"><?= the_title() ?></h2>
-                            <div class="col"><?= the_field('chamada') ?></div>
+                            <div class="title-card-height">
+                                <h2 class="title-card"><?= the_title() ?></h2>
+                            </div>
+                            <div class="col chamada"><?= the_field('chamada') ?></div>
                         </section>
-                        <section class="footer-card">
-                            <a href="<?= the_permalink() ?>">Ver mais</a>
+                        <section class="footer-card valign-wrapper flex-footer-card">
+                            <?php if (get_field('gratuito') == 'false') : ?>
+                                <span class="valor-index grey-text text-darken-1">R$<?= get_field('valor') ?></span>
+                            <?php else : ?>
+                                <span class="valor-index grey-text text-darken-1">Gratuito</span>
+                            <?php endif;
+                                    if (get_field('vagas') > 0) :
+                                        ?>
+                                <span class="small green-text text-darken-1"><?= the_field('vagas') ?> vagas</span>
+                            <?php else : ?>
+                                <span class="small red-text text-accent-4">Vagas esgotadas</span>
+                            <?php endif; ?>
                         </section>
                     </article>
                 </div>
@@ -62,5 +79,15 @@
         </div>
     </div>
 </main>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script>
+    $('.list-treinamento').on('mouseover', function() {
+        $(this).css('cursor', 'pointer');
+    })
 
+    $('.list-treinamento').click(function() {
+        var link = $(this).attr('data-url');
+        window.location.replace(link);
+    })
+</script>
 <?php get_footer(); ?>

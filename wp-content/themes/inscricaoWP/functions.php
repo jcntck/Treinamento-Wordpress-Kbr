@@ -19,6 +19,15 @@ function pc_remove_links_menu()
 }
 add_action('admin_menu', 'pc_remove_links_menu');
 
+/* Registrando menu de navegação */
+
+function registrar_menu_navegacao()
+{
+    register_nav_menu('header-menu', 'Menu Header');
+}
+
+add_action('init', 'registrar_menu_navegacao');
+
 function pc_create_post_treinamento()
 {
     $singularName = 'Treinamento';
@@ -87,7 +96,6 @@ function wordpress_pagination($items = null)
     }
 }
 
-// Tentativa de colocar o jquery mask
 function my_admin_enqueue_scripts()
 {
     wp_enqueue_script('mask-js', get_template_directory_uri() . '/js/mask/dist/jquery.mask.min.js');
@@ -118,6 +126,8 @@ function cadastrarInscrito()
             'celular' => just_number($_POST['celular']),
             'cep' => just_number($_POST['cep']),
             'endereco' => $_POST['endereco'],
+            'numero' => $_POST['num'],
+            'complemento' => $_POST['complemento'],
             'bairro' => $_POST['bairro'],
             'cidade' => $_POST['cidade'],
             'estado' => $_POST['estado'],
@@ -125,41 +135,12 @@ function cadastrarInscrito()
         )
     );
 
-    if (!$success) {
-        return new WP_Error('error', 'Não foi possível realizar seu cadastro, tente novamente mais tarde');
-    }
-}
-
-function date_converter($_date = null)
-{
-    $format = '/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/';
-    if ($_date != null && preg_match($format, $_date, $partes)) {
-        return $partes[3] . '-' . $partes[2] . '-' . $partes[1];
-    }
-    return false;
-}
-
-function just_number($number)
-{
-    return preg_replace('/\D/', '', $number);
-}
-
-function materialize_scripts()
-{
-    wp_enqueue_style('style-name', 'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
-}
-add_action('wp_enqueue_scripts', 'materialize_scripts');
-
-function inscritos_admin()
-{
-    add_menu_page('Listagem de inscritos', 'Inscritos', 'manage_options', 'inscritos_menu', 'inscritos_admin_page', 'dashicons-admin-users', 6);
-}
-
-add_action('admin_menu', 'inscritos_admin');
-
-function inscritos_admin_page()
-{
-    include_once('inscritos_admin.php');
+    if ($success) {
+        $vagasBanco = $wpdb->get_row("SELECT meta_value FROM wp_postmeta WHERE meta_key='vagas' AND post_id=" . $_POST['treinamento_id']);
+        $vagas = $vagasBanco->meta_value - 1;
+        $wpdb->update('wp_postmeta', array('meta_value' => $vagas), array('meta_key' => 'vagas', 'post_id' => $_POST['treinamento_id']));
+        return $wpdb->insert_id;
+    } else return false;
 }
 
 function getInscritos($id)
@@ -181,15 +162,190 @@ function apagarInscrito($id)
     }
 }
 
-// add_filter('manage_posts_columns', 'posts_columns');
+function validateCPF()
+{
+    global $wpdb;
+    if (isset($_POST['cpf'])) {
+        $rows = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE cpf=" . just_number($_POST['cpf']) . " AND treinamento_id=" . $_POST['treinamento_id'], ARRAY_N);
+        $nums_rows = $wpdb->num_rows;
+        if ($nums_rows > 0) return false;
+        else return true;
+    } else {
+        return false;
+    }
+}
+
+function validateEmail()
+{
+    global $wpdb;
+    if (isset($_POST['email'])) {
+        $rows = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE email='" . $_POST['email'] . "' AND treinamento_id=" . $_POST['treinamento_id'], ARRAY_N);
+        $nums_rows = $wpdb->num_rows;
+        if ($nums_rows > 0) return false;
+        else return true;
+    } else {
+        return false;
+    }
+}
+
+function saveInputsValue()
+{
+    if (isset($_SESSION['errorCPF']) && isset($_SESSION['errorEmail'])) {
+        $dados = array(
+            'nome_completo' => $_POST['nome_completo'],
+            'data_nascimento' => $_POST['data_nascimento'],
+            'telefone' => $_POST['telefone'],
+            'celular' => $_POST['celular'],
+            'cep' => $_POST['cep'],
+            'endereco' => $_POST['endereco'],
+            'num' => $_POST['num'],
+            'complemento' => $_POST['complemento'],
+            'bairro' => $_POST['bairro'],
+            'cidade' => $_POST['cidade'],
+            'estado' => $_POST['estado']
+        );
+    } else if (isset($_SESSION['errorCPF'])) {
+        $dados = array(
+            'nome_completo' => $_POST['nome_completo'],
+            'data_nascimento' => $_POST['data_nascimento'],
+            'email' => $_POST['email'],
+            'telefone' => $_POST['telefone'],
+            'celular' => $_POST['celular'],
+            'cep' => $_POST['cep'],
+            'endereco' => $_POST['endereco'],
+            'num' => $_POST['num'],
+            'complemento' => $_POST['complemento'],
+            'bairro' => $_POST['bairro'],
+            'cidade' => $_POST['cidade'],
+            'estado' => $_POST['estado']
+        );
+    } else if (isset($_SESSION['errorEmail'])) {
+        $dados = array(
+            'nome_completo' => $_POST['nome_completo'],
+            'data_nascimento' => $_POST['data_nascimento'],
+            'cpf' => $_POST['cpf'],
+            'telefone' => $_POST['telefone'],
+            'celular' => $_POST['celular'],
+            'cep' => $_POST['cep'],
+            'endereco' => $_POST['endereco'],
+            'num' => $_POST['num'],
+            'complemento' => $_POST['complemento'],
+            'bairro' => $_POST['bairro'],
+            'cidade' => $_POST['cidade'],
+            'estado' => $_POST['estado']
+        );
+    }
+    $_SESSION['inputs'] = $dados;
+}
+
+function date_converter($_date = null)
+{
+    $format = '/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/';
+    if ($_date != null && preg_match($format, $_date, $partes)) {
+        return $partes[3] . '-' . $partes[2] . '-' . $partes[1];
+    }
+    return false;
+}
+
+function just_number($number)
+{
+    return preg_replace('/\D/', '', $number);
+}
+
+function mostrarStatus($status = null)
+{
+    switch ($status) {
+        case 1:
+            return 'Aguardando pagamento';
+        case 2:
+            return 'Em análise';
+        case 3:
+            return 'Paga';
+        case 4:
+            return 'Disponível';
+        case 5:
+            return 'Em disputa';
+        case 6:
+            return 'Devolvida';
+        case 7:
+            return 'Cancelada';
+    }
+}
+
+// Email
+
+function mailtrap($phpmailer)
+{
+    $phpmailer->isSMTP();
+    $phpmailer->Host = 'smtp.mailtrap.io';
+    $phpmailer->SMTPAuth = true;
+    $phpmailer->Port = 2525;
+    $phpmailer->Username = '9c33cf350cd996';
+    $phpmailer->Password = 'db5060f6bc7ba1';
+}
+
+add_action('phpmailer_init', 'mailtrap');
+
+function wpse27856_set_content_type()
+{
+    return "text/html";
+}
+add_filter('wp_mail_content_type', 'wpse27856_set_content_type');
+
+function enviarEmail($id = null, $type = null)
+{
+    global $wpdb;
+    $inscrito = $wpdb->get_row("SELECT * FROM wp_inscritos WHERE ID = " . $id);
+
+    switch ($type) {
+        case 1:
+            $subject = 'Inscrição Confirmada com sucesso';
+            $message = '<h3>Parabéns, <strong>' . $inscrito->nome_completo . '</strong></h3>
+            <p>Você acaba de se inscrever no ' . get_the_title($inscrito->treinamento_id)  . '!</p>
+            <p>Data de inscrição: ' . date('d/m/Y', strtotime($inscrito->created_at)) . '</p>
+            <hr>
+            <p>Bons estudos - Fulano</p>';
+            break;
+        case 2:
+            $subject = 'Status de pagamento';
+            $message = "<h3>Olá, <strong>" . $inscrito->nome_completo . "</strong></h3>
+            <p>O status de transação de sua compra referente ao <strong>" . get_the_title($inscrito->treinamento_id) . "</strong> foi atualizado.</p>
+            <p>No momento ele se encontra como:</p>
+            <h4>" . mostrarStatus($inscrito->status_transacao) . "</h4>
+            <p>Assim que o pagamento for confirmado você receberá um e-mail. :D</p>
+            <hr>
+            <p>Bons estudos - Fulano</p>";
+            break;
+        default:
+            break;
+    }
+
+    $foi = wp_mail($inscrito->email, $subject, $message);
+}
+
+// Admin - Inscritos
+
+function materialize_scripts()
+{
+    wp_enqueue_style('style-name', 'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
+}
+add_action('wp_enqueue_scripts', 'materialize_scripts');
+
+function inscritos_admin()
+{
+    add_menu_page('Listagem de inscritos', 'Inscritos', 'manage_options', 'inscritos_menu', 'inscritos_admin_page', 'dashicons-admin-users', 6);
+}
+
+add_action('admin_menu', 'inscritos_admin');
+
+function inscritos_admin_page()
+{
+    include_once('inscritos_admin.php');
+}
+
 add_filter('manage_treinamento_posts_columns', 'posts_columns');
-// add_action('manage_treinamento_posts_custom_column', 'inscritos_columns_content', 5, 2);
 add_action('manage_treinamento_posts_custom_column', 'inscritos_columns_content', 10, 2);
 
-// function posts_columns($defaults) {
-//     $defaults['vizualizar_user'] = __('Vizualizar');
-//    return $defaults;
-// }
 function posts_columns($defaults)
 {
     $defaults = array(
@@ -207,9 +363,3 @@ function inscritos_columns_content($column_name, $post_ID)
         echo '<a href="' . site_url() . '/wp-admin/admin.php?page=inscritos_menu&treinamento_id=' . $post_ID . '">Inscritos</a>';
     }
 }
-
-//  function posts_custom_columns($column_name, $id){
-//    if($column_name === 'vizualizar_user'){
-//      echo "<button style='padding: 0.375rem 0.75rem;border-radius: 0.25rem;font-size: 1rem;color: #fff !important;background-color: #f0ad4e;border-color: #f0ad4e;border: 1px solid transparent;text-decoration: none;'><a href='./admin.php?page=treinamentos&id=".$id."' >Vizualizar</a></button>";
-//    }
-//  }

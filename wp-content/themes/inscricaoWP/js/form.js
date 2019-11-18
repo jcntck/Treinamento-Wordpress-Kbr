@@ -65,13 +65,14 @@ $(document).ready(function() {
     $('#telefone').mask('(00) 0000-0000');
     $('#celular').mask(SPMask, spOptions);
     $('#cep').mask('00000-000');
+    $('#num').mask("#");
 
     /** JQuery Validation **/
     $("#formInscricao").validate({
         rules: {
             nome_completo: {
                 required: true,
-                minlength: 5
+                minlength: 8
             },
             data_nascimento: {
                 required: true,
@@ -99,6 +100,13 @@ $(document).ready(function() {
             endereco: {
                 required: true
             },
+            num: {
+                required: true,
+                number: true
+            },
+            complemento: {
+                maxlength: 18
+            },
             bairro: {
                 required: true
             },
@@ -112,7 +120,7 @@ $(document).ready(function() {
         messages: {
             nome_completo: {
                 required: "Coloque o seu nome.",
-                minlength: "O nome deve conter pelo menos 5 caracteres."
+                minlength: "O nome deve conter pelo menos 8 caracteres."
             },
             data_nascimento: {
                 required: "Coloque a data de seu nascimento."
@@ -137,6 +145,15 @@ $(document).ready(function() {
             },
             endereco: {
                 required: "Coloque o seu endereço"
+            },
+            num: {
+                required: "Coloque o seu numero"
+            },
+            complemento: {
+                maxlength: "O complemento deve conter no máximo 18 caracteres"
+            },
+            bairro: {
+                required: "Coloque o seu bairro"
             },
             cidade: {
                 required: "Coloque a sua cidade"
