@@ -29,7 +29,7 @@ $wpdb->update( 'wp_inscritos', ['status_transacao' => $status], ['code_transacao
 
 
 if ($status != 3) {
-    enviarEmail($inscrito->ID, 2);
-} else {
     enviarEmail($inscrito->ID, 3);
+} else {
+    enviarEmail($inscrito->ID, 4);
 }

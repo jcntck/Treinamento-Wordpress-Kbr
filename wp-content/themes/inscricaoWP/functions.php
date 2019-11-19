@@ -153,6 +153,12 @@ function getInscritos($id)
 function apagarInscrito($id)
 {
     global $wpdb;
+
+    $inscrito = $wpdb->get_row("SELECT * FROM wp_inscritos WHERE ID = " . $id);
+    $vagasBanco = $wpdb->get_row("SELECT meta_value FROM wp_postmeta WHERE meta_key='vagas' AND post_id=" . $inscrito->treinamento_id);
+    $vagas = $vagasBanco->meta_value + 1;
+    $wpdb->update('wp_postmeta', array('meta_value' => $vagas), array('meta_key' => 'vagas', 'post_id' => $inscrito->treinamento_id));
+
     $status = $wpdb->delete("wp_inscritos", array('ID' => $id), array('%d'));
 
     if ($status) {
@@ -301,12 +307,20 @@ function enviarEmail($id = null, $type = null)
         case 1:
             $subject = 'Inscrição Confirmada com sucesso';
             $message = '<h3>Parabéns, <strong>' . $inscrito->nome_completo . '</strong></h3>
-            <p>Você acaba de se inscrever no ' . get_the_title($inscrito->treinamento_id)  . '!</p>
-            <p>Data de inscrição: ' . date('d/m/Y', strtotime($inscrito->created_at)) . '</p>
+            <p>Você acaba de se inscrever no <strong>' . get_the_title($inscrito->treinamento_id)  . '</strong>!</p>
+            <p>Data de inscrição: <strong>' . date('d/m/Y', strtotime($inscrito->created_at)) . '</strong></p>
             <hr>
             <p>Bons estudos - Fulano</p>';
             break;
         case 2:
+            $subject = 'Inscrição Recebida';
+            $message = '<h3>Olá, <strong>' . $inscrito->nome_completo . '</strong></h3>
+            <p>Ficamos felizes em saber que você está interessado em um do nossos treinamentos, no seu caso <strong>' . get_the_title($inscrito->treinamento_id) . '</strong>!</p>
+            <p>Recebemos sua inscrição e assim que o pagamento for confirmado mandaremos um e-mail de confimação.</p>
+            <hr>
+            <p>Bons estudos - Fulano</p>';
+            break;
+        case 3:
             $subject = 'Status de pagamento';
             $message = "<h3>Olá, <strong>" . $inscrito->nome_completo . "</strong></h3>
             <p>O status de transação de sua compra referente ao <strong>" . get_the_title($inscrito->treinamento_id) . "</strong> foi atualizado.</p>
@@ -316,6 +330,14 @@ function enviarEmail($id = null, $type = null)
             <hr>
             <p>Bons estudos - Fulano</p>";
             break;
+        case 4:
+            $subject = 'Inscrição Confirmada com sucesso';
+            $message = '<h3>Parabéns, <strong>' . $inscrito->nome_completo . '</strong></h3>
+            <p>Seu pagamento foi confirmado</p>
+            <p>Você acaba de se inscrever no <strong>' . get_the_title($inscrito->treinamento_id)  . '</strong> no valor de <strong>R$'.get_field('valor', $inscrito->treinamento_id).'</strong></p>
+            <p>Data de inscrição: <strong>' . date('d/m/Y', strtotime($inscrito->created_at)) . '</strong></p>
+            <hr>
+            <p>Bons estudos - Fulano</p>';
         default:
             break;
     }
@@ -330,6 +352,12 @@ function materialize_scripts()
     wp_enqueue_style('style-name', 'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
 }
 add_action('wp_enqueue_scripts', 'materialize_scripts');
+
+function datable_style()
+{
+    wp_enqueue_style('style-name', 'https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.20/datatables.min.css');
+}
+add_action('wp_enqueue_scripts', 'datable_style');
 
 function inscritos_admin()
 {
@@ -363,3 +391,6 @@ function inscritos_columns_content($column_name, $post_ID)
         echo '<a href="' . site_url() . '/wp-admin/admin.php?page=inscritos_menu&treinamento_id=' . $post_ID . '">Inscritos</a>';
     }
 }
+
+
+add_filter( 'pre_site_transient_update_core', create_function( '$a', "return null;" ) );

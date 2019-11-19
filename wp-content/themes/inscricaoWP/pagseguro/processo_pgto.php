@@ -55,7 +55,7 @@ if (cadastrarInscrito()) {
     curl_close($curl);
 
     $data = simplexml_load_string($dataXml);
-    
+
     global $wpdb;
     $id = $wpdb->insert_id;
     if (isset($data->error)) {
@@ -65,6 +65,9 @@ if (cadastrarInscrito()) {
         echo json_encode($data);
     } else {
         $wpdb->update('wp_inscritos', array('code_transacao' => $data->code, 'status_transacao' => $data->status), array('ID' => $id));
+        enviarEmail($id, 2);
+        session_start(); // Inicia a sessão
+        $_SESSION['success'] = "Inscrição realizada";
         header('Content-Type: application/json');
         echo json_encode($data);
     }

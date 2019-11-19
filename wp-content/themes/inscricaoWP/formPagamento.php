@@ -278,7 +278,7 @@ if ($validCpf && $validEmail) {
                             $('#pagamento').prop('disabled', true);
                         },
                         success: function(data) {
-                            console.log(data)
+                            // console.log(data)
                             if (data.error) {
                                 $('#error-transacao').empty();
                                 $('#error-transacao').append("<div class='row'> <div class='col s12 card-panel red accent-1'> <p>Ocorreu um erro na transação, por favor verifique se os dados do cartão estão corretos</p> </div> </div>");
@@ -290,7 +290,10 @@ if ($validCpf && $validEmail) {
                         },
                         error: function(data) {
                             console.log(data);
-                        }
+                        },
+                        complete: function() {
+                            window.location.replace('<?=home_url()?>');
+                        } 
                     });
                 }
             });

@@ -11,13 +11,7 @@ get_header();
             <h1 class='title'>Treinamentos</h1>
         </div>
         <div class="col s12 m6 l4 vertical-align">
-            <form>
-                <div class="input-field">
-                    <i class="material-icons prefix">search</i>
-                    <input id="search" type="search">
-                    <label for="search">Pesquisa</label>
-                </div>
-            </form>
+            <?= get_search_form(); ?>
         </div>
     </div>
     <?php if (isset($_SESSION['success'])) : ?>
@@ -34,7 +28,8 @@ get_header();
         $args = array(
             'post_type' => 'treinamento',
             'posts_per_page' => 6,
-            'paged' => get_query_var('paged') ? get_query_var('paged') : 1
+            'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
+            's' => $_GET['s']
         );
 
         $items = new WP_Query($args);
@@ -48,13 +43,9 @@ get_header();
                                     endif; ?>
                         </div>
                         <section class="desc-card">
-<<<<<<< HEAD
                             <div class="title-card-height">
                                 <h2 class="title-card"><?= the_title() ?></h2>
                             </div>
-=======
-                            <h2 class="title-card"><?= the_title() ?></h2>
->>>>>>> d7caca1bc3f764ea5eaa234c1ee0f5179b3aa43e
                             <div class="col chamada"><?= the_field('chamada') ?></div>
                         </section>
                         <section class="footer-card valign-wrapper flex-footer-card">
