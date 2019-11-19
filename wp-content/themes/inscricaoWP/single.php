@@ -21,7 +21,7 @@ $treinamento = get_fields();
                 <div class="col s12 m7 l8">
                     <h3 id="titulo-desc-single">Descrição: </h3>
                     <div class="content">
-                        <?= the_content() ?>
+                        <?= the_content() != "" ? the_content() : "Esse treinamento não possui descrição" ?>
                     </div>
                 </div>
                 <aside class="col s12 m5 l4">

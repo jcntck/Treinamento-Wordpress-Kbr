@@ -53,11 +53,13 @@ if (cadastrarInscrito()) {
     curl_setopt($curl, CURLOPT_POSTFIELDS, $buildQuery);
     $dataXml = curl_exec($curl);
     curl_close($curl);
+
     $data = simplexml_load_string($dataXml);
     
     global $wpdb;
     $id = $wpdb->insert_id;
     if (isset($data->error)) {
+
         apagarInscrito($id);
         header('Content-Type: application/json');
         echo json_encode($data);

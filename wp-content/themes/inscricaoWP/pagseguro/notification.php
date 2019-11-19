@@ -28,7 +28,6 @@ $inscrito = $wpdb->get_row("SELECT * FROM wp_inscritos WHERE code_transacao = '"
 $wpdb->update( 'wp_inscritos', ['status_transacao' => $status], ['code_transacao' => $codigo]);
 
 
-// wp_mail( [$inscrito->email], "Teste!", "Olá ".$inscrito->nome.", recebemos seu pagamento e sua inscrição foi efetivada com sucesso!");
 if ($status != 3) {
     enviarEmail($inscrito->ID, 2);
 } else {

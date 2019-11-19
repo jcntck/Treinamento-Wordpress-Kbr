@@ -48,9 +48,13 @@ get_header();
                                     endif; ?>
                         </div>
                         <section class="desc-card">
+<<<<<<< HEAD
                             <div class="title-card-height">
                                 <h2 class="title-card"><?= the_title() ?></h2>
                             </div>
+=======
+                            <h2 class="title-card"><?= the_title() ?></h2>
+>>>>>>> d7caca1bc3f764ea5eaa234c1ee0f5179b3aa43e
                             <div class="col chamada"><?= the_field('chamada') ?></div>
                         </section>
                         <section class="footer-card valign-wrapper flex-footer-card">
