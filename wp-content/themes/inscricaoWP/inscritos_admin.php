@@ -1,10 +1,10 @@
-<?php datable_style(); ?>
-
+<?php datable_style();?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
 <?php
 global $wpdb;
 if (isset($_POST['apagar'])) $message = apagarInscrito($_POST['apagar']);
-if (isset($_GET['treinamento_id'])) $results = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE treinamento_id=" . $_GET['treinamento_id']);
-else $results = $wpdb->get_results("SELECT * FROM wp_inscritos");
+if (isset($_GET['treinamento_id'])) $results = $wpdb->get_results("SELECT * FROM wp_inscritos WHERE treinamento_id=" . $_GET['treinamento_id'] . " order by ID desc");
+else $results = $wpdb->get_results("SELECT * FROM wp_inscritos order by ID desc");
 ?>
 <style>
     #wpfooter {
@@ -21,7 +21,7 @@ if (!empty($results)) : ?>
     <main class="container-fluid">
         <section class="row">
             <div class="col">
-                <table class="table table-striped" id="inscritos">
+                <table class="table table-striped table-sm " id="inscritos">
                     <thead>
                         <tr>
                             <th>TREINAMENTO</th>
@@ -29,7 +29,7 @@ if (!empty($results)) : ?>
                             <th>NOME COMPLETO</th>
                             <th>E-MAIL</th>
                             <th>STATUS</th>
-                            <th></th>
+                            <th>AÇÕES</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,9 +41,9 @@ if (!empty($results)) : ?>
                                 <td><?= $inscrito->email ?></td>
                                 <td><?= $inscrito->status_transacao ? mostrarStatus($inscrito->status_transacao) : 'Gratuito' ?></td>
                                 <td>
-                                    <button class="btn btn-info btn-sm" value="<?= $inscrito->ID ?>">Mais informações</button>
+                                    <button class="btn btn-info btn-sm" title="Ver mais informações" value="<?= $inscrito->ID ?>"><i class="fas fa-search"></i></button>
                                     <form method="post" style="display: inline">
-                                        <button class="btn btn-danger btn-sm" name="apagar" value="<?= $inscrito->ID ?>">Deletar</button>
+                                        <button class="btn btn-danger btn-sm" title="Apagar esse inscrito" name="apagar" value="<?= $inscrito->ID ?>"><i class="fas fa-trash"></i></button>
                                     </form>
 
                                 </td>

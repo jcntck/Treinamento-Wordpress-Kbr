@@ -4,20 +4,68 @@ add_theme_support('post-thumbnails');
 
 function pc_remove_links_menu()
 {
-
     global $menu;
-
-    remove_menu_page('index.php'); //Dashboard
+    remove_menu_page('index.php'); // Painel
+    remove_menu_page('upload.php'); // Mídia
     remove_menu_page('edit.php'); // Posts
-    remove_menu_page('edit-comments.php'); // Comentários
-    // remove_menu_page('plugins.php'); // Plugins
+    remove_menu_page('link-manager.php'); // Links Permanentes
+    remove_menu_page('themes.php'); // Temas
+    remove_menu_page('edit-comments.php'); // Comentarios
+    remove_menu_page('edit.php?post_type=page'); // Páginas
+    // remove_menu_page('edit.php?post_type=acf-field-group'); // Campos personalizados
+    remove_menu_page('plugins.php'); // Plugins
+    remove_menu_page('users.php'); // Usuarios
+    remove_menu_page('options-general.php');  // Configurações
     remove_menu_page('tools.php');  // Ferramentas
-    // remove_menu_page ('upload.php'); // Mídia
-    // remove_menu_page ('link-manager.php'); // Links Permanentes
-    // remove_menu_page ('options-general.php');  // Configurações
-
 }
 add_action('admin_menu', 'pc_remove_links_menu');
+// ----------------------------
+// --  REMOVER ITENS SUB MENUS  --
+// ----------------------------
+function pc_remove_submenus()
+{
+    global $submenu;
+    unset($submenu['themes.php'][5]); // Remove 'Temas'.
+    unset($submenu['options-general.php'][15]); // Remove 'Escrita'.
+    unset($submenu['options-general.php'][25]); // Remove 'Discussão'.
+    unset($submenu['tools.php'][5]); // Remove 'Disponíveis'.
+    unset($submenu['tools.php'][10]); // Remove 'Importar'.
+    unset($submenu['tools.php'][15]); // Remove 'Exportar'.
+}
+add_action('admin_menu', 'pc_remove_submenus');
+// Remove Link Aparência > Editor
+function remove_editor_menu()
+{
+    remove_action('admin_menu', '_add_themes_utility_last', 101);
+}
+add_action('_admin_menu', 'remove_editor_menu', 1);
+// Remove Link Plugin > Editor
+function pc_remove_plugin_editor()
+{
+    remove_submenu_page('plugins.php', 'plugin-editor.php');
+}
+add_action('admin_init', 'pc_remove_plugin_editor');
+
+// update toolbar
+function update_adminbar($wp_adminbar)
+{
+
+    // remove unnecessary items
+    $wp_adminbar->remove_node('wp-logo');
+    $wp_adminbar->remove_node('customize');
+    $wp_adminbar->remove_node('updates');
+    $wp_adminbar->remove_node('comments');
+    $wp_adminbar->remove_node('dashboard');
+    $wp_adminbar->remove_node('themes');
+    $wp_adminbar->remove_node('menus');
+    $wp_adminbar->remove_node('new-post');
+    $wp_adminbar->remove_node('new-media');
+    $wp_adminbar->remove_node('new-page');
+    $wp_adminbar->remove_node('new-user');
+}
+
+// admin_bar_menu hook
+add_action('admin_bar_menu', 'update_adminbar', 999);
 
 /* Registrando menu de navegação */
 
@@ -136,9 +184,9 @@ function cadastrarInscrito()
     );
 
     if ($success) {
-        $vagasBanco = $wpdb->get_row("SELECT meta_value FROM wp_postmeta WHERE meta_key='vagas' AND post_id=" . $_POST['treinamento_id']);
-        $vagas = $vagasBanco->meta_value - 1;
-        $wpdb->update('wp_postmeta', array('meta_value' => $vagas), array('meta_key' => 'vagas', 'post_id' => $_POST['treinamento_id']));
+        // $vagasBanco = $wpdb->get_row("SELECT meta_value FROM wp_postmeta WHERE meta_key='vagas' AND post_id=" . $_POST['treinamento_id']);
+        // $vagas = $vagasBanco->meta_value - 1;
+        // $wpdb->update('wp_postmeta', array('meta_value' => $vagas), array('meta_key' => 'vagas', 'post_id' => $_POST['treinamento_id']));
         return $wpdb->insert_id;
     } else return false;
 }
@@ -154,18 +202,23 @@ function apagarInscrito($id)
 {
     global $wpdb;
 
-    $inscrito = $wpdb->get_row("SELECT * FROM wp_inscritos WHERE ID = " . $id);
-    $vagasBanco = $wpdb->get_row("SELECT meta_value FROM wp_postmeta WHERE meta_key='vagas' AND post_id=" . $inscrito->treinamento_id);
-    $vagas = $vagasBanco->meta_value + 1;
-    $wpdb->update('wp_postmeta', array('meta_value' => $vagas), array('meta_key' => 'vagas', 'post_id' => $inscrito->treinamento_id));
+    // $inscrito = $wpdb->get_row("SELECT * FROM wp_inscritos WHERE ID = " . $id);
+    // $vagasBanco = $wpdb->get_row("SELECT meta_value FROM wp_postmeta WHERE meta_key='vagas' AND post_id=" . $inscrito->treinamento_id);
+    // $vagas = $vagasBanco->meta_value + 1;
+    // $wpdb->update('wp_postmeta', array('meta_value' => $vagas), array('meta_key' => 'vagas', 'post_id' => $inscrito->treinamento_id));
 
     $status = $wpdb->delete("wp_inscritos", array('ID' => $id), array('%d'));
 
     if ($status) {
-        return '<div class="col s11 card-panel red accent-1"> <p> Inscrito deletado <a href="#" onclick="fecharMessagem()">Fechar</a></p>  </div>';
+        return '<div class="alert alert-danger alert-dismissible fade show" role="alert">Inscrito deletado com sucesso! <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
     } else {
-        return '<div class="col s11 card-panel red accent-1"> <p> Não foi possível deletar esse inscrito. Tente novamente mais tarde. <a href="#" onclick="fecharMessagem()">Fechar</a></p>  </div>';
+        return '<div class="alert alert-secondary alert-dismissible fade show" role="alert">Não foi possível deletar esse inscrito. Tente novamente mais tarde. <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
     }
+}
+
+function countVagas($treinamento_id) {
+    global $wpdb;
+    return get_field('vagas', $treinamento_id) - $wpdb->get_var("SELECT count(ID) FROM wp_inscritos WHERE treinamento_id = ". $treinamento_id);
 }
 
 function validateCPF()
@@ -334,7 +387,7 @@ function enviarEmail($id = null, $type = null)
             $subject = 'Inscrição Confirmada com sucesso';
             $message = '<h3>Parabéns, <strong>' . $inscrito->nome_completo . '</strong></h3>
             <p>Seu pagamento foi confirmado</p>
-            <p>Você acaba de se inscrever no <strong>' . get_the_title($inscrito->treinamento_id)  . '</strong> no valor de <strong>R$'.get_field('valor', $inscrito->treinamento_id).'</strong></p>
+            <p>Você acaba de se inscrever no <strong>' . get_the_title($inscrito->treinamento_id)  . '</strong> no valor de <strong>R$' . get_field('valor', $inscrito->treinamento_id) . '</strong></p>
             <p>Data de inscrição: <strong>' . date('d/m/Y', strtotime($inscrito->created_at)) . '</strong></p>
             <hr>
             <p>Bons estudos - Fulano</p>';
@@ -393,4 +446,4 @@ function inscritos_columns_content($column_name, $post_ID)
 }
 
 
-add_filter( 'pre_site_transient_update_core', create_function( '$a', "return null;" ) );
+add_filter('pre_site_transient_update_core', create_function('$a', "return null;"));

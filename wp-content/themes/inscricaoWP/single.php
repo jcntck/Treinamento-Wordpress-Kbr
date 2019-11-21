@@ -7,7 +7,7 @@ $treinamento = get_fields();
     <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
             <section id="title-single" class="card-panel">
                 <figure>
-                    <?php if (has_post_thumbnail()) : the_post_thumbnail();
+                    <?php if (has_post_thumbnail()) : the_post_thumbnail('medium');
                             else : echo "<img src='" . get_template_directory_uri() . "/images/no-img.png'>";
                             endif; ?>
                 </figure>
@@ -21,7 +21,7 @@ $treinamento = get_fields();
                 <div class="col s12 m7 l8">
                     <h3 id="titulo-desc-single">Descrição: </h3>
                     <div class="content">
-                        <?= the_content() != "" ? the_content() : "Esse treinamento não possui descrição" ?>
+                        <?= get_the_content() != "" ? the_content() : "Esse treinamento não possui descrição" ?>
                     </div>
                 </div>
                 <aside class="col s12 m5 l4">
@@ -33,9 +33,9 @@ $treinamento = get_fields();
                                 <span class="preco">R$<?= $treinamento['valor'] ?></span>
                             <?php endif; ?>
                         </div>
-                        <?php if ($treinamento['vagas'] > 0) : ?>
+                        <?php if (countVagas($post->ID) > 0) : ?>
                             <div class="vagas center">
-                                <p><span id="numero"><?= $treinamento['vagas'] ?></span> vagas restantes.</p>
+                                <p><span id="numero"><?= countVagas($post->ID) ?></span> vagas restantes.</p>
                             </div>
                     </section>
                     <section>

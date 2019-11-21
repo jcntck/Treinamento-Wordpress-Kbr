@@ -1,4 +1,5 @@
 <?php 
+session_save_path(realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/../tmp'));
 session_start();
 get_header(); 
 ?>
@@ -21,7 +22,6 @@ get_header();
             </div>
         </div>
     <?php 
-    session_destroy();
     endif; ?>
     <div class="row">
         <?php
@@ -54,9 +54,9 @@ get_header();
                             <?php else : ?>
                                 <span class="valor-index grey-text text-darken-1">Gratuito</span>
                             <?php endif;
-                                    if (get_field('vagas') > 0) :
+                                    if (countVagas($post->ID)  > 0) :
                                         ?>
-                                <span class="small green-text text-darken-1"><?= the_field('vagas') ?> vagas</span>
+                                <span class="small green-text text-darken-1"><?= countVagas($post->ID)  ?> vagas</span>
                             <?php else : ?>
                                 <span class="small red-text text-accent-4">Vagas esgotadas</span>
                             <?php endif; ?>
@@ -85,4 +85,5 @@ get_header();
         window.location.replace(link);
     })
 </script>
-<?php get_footer(); ?>
+<?php get_footer();
+session_destroy(); ?>

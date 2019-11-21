@@ -24,7 +24,10 @@ if ($validCpf && $validEmail) {
         <section class="row card-panel">
             <div class="error-transacao" id="error-transacao"></div>
             <form id="formPagamento" name="formPagamento" class="col s12">
-                <div class="load"></div>
+                <div class="load center"></div>
+                <div class="row">
+                    <div class="meio-pag"></div>
+                </div>
 
                 <!-- Informações do treinamento -->
                 <input type="hidden" name="treinamento_id" value="<?= $_POST['treinamento_id'] ?>">
@@ -46,14 +49,14 @@ if ($validCpf && $validEmail) {
 
                 <div class="row">
                     <div class="input-field col s12">
-                        <input placeholder="Nome impresso no cartão" id="nome_cartao" name="nome-cartao" type="text" data-error=".errorNomeCartao">
+                        <input placeholder="Nome impresso no cartão" id="nome_cartao" name="nome-cartao" type="text" data-error=".errorNomeCartao" maxlength="50">
                         <label for="nome-cartao">Nome no cartão:</label>
                         <div class="errorNomeCartao"></div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input placeholder="N° do cartão" id="num_cartao" name="num-cartao" type="text" maxlength="16"  data-error=".errorCartao">
+                        <input placeholder="N° do cartão" id="num_cartao" name="num-cartao" type="text" maxlength="16" data-error=".errorCartao">
                         <label for="num-cartao">N° do Cartão</label>
                         <div id="erro-cartao" class="errorCartao"></div>
                     </div>
@@ -68,7 +71,7 @@ if ($validCpf && $validEmail) {
                     <div class="col s1"></div>
                     <div class="input-field col s6 m4 l2">
                         <label for="cvv-cartao">CVV: </label>
-                        <input placeholder="CVV" id="cvv_cartao" name="cvv-cartao" type="text" data-error=".errorCvv">
+                        <input placeholder="CVV" id="cvv_cartao" name="cvv-cartao" type="text" data-error=".errorCvv" maxlength="3">
                         <span class="helper-text">Código de segurança</span>
                         <div class="errorCvv"></div>
                     </div>
@@ -121,8 +124,6 @@ if ($validCpf && $validEmail) {
                 success: function(data) {
                     //ID da sessão retornada pelo PagSeguro
                     PagSeguroDirectPayment.setSessionId(data.id);
-                    $('.load').empty();
-                    $('#pagamento').prop('disabled', false);
                 },
                 complete: function(retorno) {
                     listarMeioPag();
@@ -133,32 +134,7 @@ if ($validCpf && $validEmail) {
                 e.preventDefault();
             });
 
-
-            // $("#formPagamento").validate({
-            //     rules: {
-            //         nome_cartao: {
-            //             required: true
-            //         },
-            //         num_cartao: {
-            //             required: true
-            //         }
-            //     },
-            //     messages: {
-
-            //     },
-            //     errorElement: 'div',
-            //     errorPlacement: function(error, element) {
-            //         var placement = $(element).data('error');
-            //         if (placement) {
-            //             $(placement).addClass("error");
-            //             $(placement).append(error);
-            //         } else {
-            //             error.insertAfter(element);
-            //         }
-            //     }
-            // });
-
-            $('#num_cartao').mask("#");
+            $('#num_cartao').mask("0000 0000 0000 0000");
             $('#vencimento_cartao').mask("00/0000");
             $('#cvv_cartao').mask("#");
 
@@ -167,21 +143,25 @@ if ($validCpf && $validEmail) {
         function listarMeioPag() {
             PagSeguroDirectPayment.getPaymentMethods({
                 amount: amount,
-                success: function(response) {
-                    // Retorna os meios de pagamento disponíveis.
+                success: function(retorno) {
+                    $('.meio-pag').append("<p style='padding: 0 8px;'>Cartão de Crédito</p>");
+                    $.each(retorno.paymentMethods.CREDIT_CARD.options, function(i, obj) {
+                        $('.meio-pag').append("<span class='img-band' style='padding: 0 8px;'><img src='https://stc.pagseguro.uol.com.br" + obj.images.SMALL.path + "'></span>");
+                    });
                 },
-                error: function(response) {
-                    // Callback para chamadas que falharam.
+                error: function() {
+                    $('.meio-pag').html('Falha ao receber Informações de pagamento');
                 },
-                complete: function(response) {
-                    // recupTokenCartao();
+                complete: function() {
+                    $('.load').empty();
+                    $('#pagamento').prop('disabled', false);
                 }
             });
 
         }
 
         $('#num_cartao').on('blur', function() {
-            var numCartao = $(this).val();
+            var numCartao = $(this).val().split(' ').join('');
             var qtdNumero = numCartao.length;
             if (qtdNumero > 6) {
                 PagSeguroDirectPayment.getBrand({
@@ -239,9 +219,10 @@ if ($validCpf && $validEmail) {
 
         $('#formPagamento').on('submit', function(e) {
             e.preventDefault();
+            $('#pagamento').prop('disabled', true);
 
             PagSeguroDirectPayment.createCardToken({
-                cardNumber: $('#num_cartao').val(), // Número do cartão de crédito
+                cardNumber: $('#num_cartao').val().split(' ').join(''), // Número do cartão de crédito
                 brand: $('#card-band').val(), // Bandeira do cartão
                 cvv: $("#cvv_cartao").val(), // CVV do cartão
                 expirationMonth: $('#vencimento_cartao').val().split('/')[0], // Mês da expiração do cartão
@@ -275,25 +256,30 @@ if ($validCpf && $validEmail) {
                         dataType: 'json',
                         beforeSend: function() {
                             $('.load').append("<img src='<?= get_template_directory_uri() ?>/images/load.gif' width='50'>");
-                            $('#pagamento').prop('disabled', true);
                         },
                         success: function(data) {
                             // console.log(data)
                             if (data.error) {
+                                // console.log(data);
                                 $('#error-transacao').empty();
-                                $('#error-transacao').append("<div class='row'> <div class='col s12 card-panel red accent-1'> <p>Ocorreu um erro na transação, por favor verifique se os dados do cartão estão corretos</p> </div> </div>");
+                                if (data.error.code == 53122) {
+                                    $('#error-transacao').append("<div class='row'> <div class='col s12 card-panel red accent-1'> <p>Domínio de e-mail inválido para efetuar a transação (*Sandbox)</p> </div> </div>");
+                                } else {
+                                    $('#error-transacao').append("<div class='row'> <div class='col s12 card-panel red accent-1'> <p>Ocorreu um erro na transação, por favor verifique se os dados do cartão estão corretos</p> </div> </div>");
+                                }
                             } else {
                                 $('#error-transacao').empty();
+                                window.location.replace('<?= home_url() ?>');
                             }
                             $('.load').empty();
                             $('#pagamento').prop('disabled', false);
                         },
                         error: function(data) {
-                            console.log(data);
+                            $('#error-transacao').append("<div class='row'> <div class='col s12 card-panel red accent-1'> <p>Ocorreu um erro na transação, tente novamente mais tarde.</p> </div> </div>");
                         },
                         complete: function() {
-                            window.location.replace('<?=home_url()?>');
-                        } 
+
+                        }
                     });
                 }
             });

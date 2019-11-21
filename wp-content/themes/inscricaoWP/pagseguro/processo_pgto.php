@@ -66,6 +66,7 @@ if (cadastrarInscrito()) {
     } else {
         $wpdb->update('wp_inscritos', array('code_transacao' => $data->code, 'status_transacao' => $data->status), array('ID' => $id));
         enviarEmail($id, 2);
+        session_save_path(realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/../tmp'));
         session_start(); // Inicia a sessão
         $_SESSION['success'] = "Inscrição realizada";
         header('Content-Type: application/json');

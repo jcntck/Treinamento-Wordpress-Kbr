@@ -1,5 +1,6 @@
 <?php
 /* Template Name: Formulário Inscritos */
+session_save_path(realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/../tmp'));
 session_start(); // Inicia a sessão
 if (isset($_POST['submit'])) {
     $validCpf = validateCPF();
@@ -19,7 +20,6 @@ if (isset($_POST['submit'])) {
     }
 }
 get_header();
-
 if (isset($_GET['id'])) $treinamento = carregarTreinamento($_GET['id']);
 $acf = $treinamento['acf'];
 $treinamento_wp = $treinamento['wp'];
@@ -47,9 +47,6 @@ $thumb = $treinamento['thumb'];
                     <?php else : ?>
                         <span class="preco">R$<?= $acf['valor'] ?></span>
                     <?php endif; ?>
-                </div>
-                <div class="vagas">
-                    <p><?= $acf['vagas'] ?> vagas sobrando.</p>
                 </div>
             </div>
         </section>
@@ -168,7 +165,7 @@ $thumb = $treinamento['thumb'];
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn-large color-custom waves-effect waves-light light-blue lighten-2" type="submit" name="submit">Cadastrar
+                            <button class="btn-large color-custom waves-effect waves-light light-blue lighten-2" id="btnSubmit" type="submit" name="submit">Cadastrar
                                 <i class="material-icons right">send</i>
                             </button>
                         </div>
@@ -184,8 +181,6 @@ $thumb = $treinamento['thumb'];
 <script src="<?= get_template_directory_uri() . '/js/validation/dist/jquery.validate.min.js' ?>"></script>
 <script src="<?= get_template_directory_uri() . '/js/validation/dist/additional-methods.min.js' ?>"></script>
 <script src="<?= get_template_directory_uri() . '/js/form.js' ?>"></script>
-<script>
 
-</script>
 <?php get_footer();
 session_destroy(); ?>
